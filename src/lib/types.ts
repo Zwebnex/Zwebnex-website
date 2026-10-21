@@ -51,7 +51,9 @@ export interface PricingPackage {
   id: string;
   name: string;
   tagline: string;
-  priceDisplay: string;
+  priceDisplay?: string;
+  baseInrPrice: number;
+  priceSuffix?: string;
   isPopular?: boolean;
   timeline: string;
   features: string[];

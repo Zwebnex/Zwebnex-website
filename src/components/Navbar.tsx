@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Menu, X, ArrowRight, Sparkles } from '@/components/Icons';
+import CurrencySelector from '@/components/CurrencySelector';
 
 interface NavbarProps {
   currentPath?: string;
@@ -72,8 +73,9 @@ export default function Navbar({ currentPath = '/' }: NavbarProps) {
             })}
           </nav>
 
-          {/* Header Action CTA */}
-          <div className="hidden lg:flex items-center gap-4">
+          {/* Header Action CTA & Currency Selector */}
+          <div className="hidden lg:flex items-center gap-3">
+            <CurrencySelector variant="navbar" />
             <Link
               href="/contact?intent=quote"
               className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-white bg-[#F27322] hover:bg-[#D45607] shadow-sm hover:shadow transition-all duration-200 group"
@@ -84,7 +86,8 @@ export default function Navbar({ currentPath = '/' }: NavbarProps) {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="flex items-center md:hidden">
+          <div className="flex items-center gap-2 md:hidden">
+            <CurrencySelector variant="navbar" />
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -112,7 +115,7 @@ export default function Navbar({ currentPath = '/' }: NavbarProps) {
                 {link.name}
               </Link>
             ))}
-            <div className="pt-3 border-t border-slate-100">
+            <div className="pt-3 border-t border-slate-100 flex flex-col gap-3">
               <Link
                 href="/contact?intent=quote"
                 onClick={() => setMobileMenuOpen(false)}

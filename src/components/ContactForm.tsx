@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Send, CheckCircle2, AlertCircle, Loader2, Sparkles, Phone, Mail, MessageSquare } from '@/components/Icons';
+import { Send, CheckCircle2, AlertCircle, Loader2, Sparkles, Phone, Mail, MessageSquare, Globe } from '@/components/Icons';
 import { SERVICES } from '@/lib/data';
+import { useCurrency } from '@/context/CurrencyContext';
+import CurrencySelector from '@/components/CurrencySelector';
 
 interface ContactFormProps {
   initialService?: string;
@@ -12,6 +14,7 @@ interface ContactFormProps {
 
 export default function ContactForm({ initialService, initialPackage }: ContactFormProps) {
   const searchParams = useSearchParams();
+  const { currency, currencyInfo, setCurrency, budgetTiers } = useCurrency();
   
   const [formData, setFormData] = useState({
     fullName: '',
@@ -25,6 +28,7 @@ export default function ContactForm({ initialService, initialPackage }: ContactF
     agreePrivacy: true,
   });
 
+  const [selectedPackageBadge, setSelectedPackageBadge] = useState<{ name: string; price?: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -33,18 +37,30 @@ export default function ContactForm({ initialService, initialPackage }: ContactF
   useEffect(() => {
     const serviceParam = searchParams.get('service');
     const packageParam = searchParams.get('package');
+    const priceParam = searchParams.get('price');
+    const currencyParam = searchParams.get('currency');
     const intentParam = searchParams.get('intent');
+
+    if (currencyParam) {
+      setCurrency(currencyParam);
+    }
 
     if (serviceParam) {
       setFormData((prev) => ({ ...prev, serviceInterest: serviceParam }));
     }
+
     if (packageParam) {
-      setFormData((prev) => ({ ...prev, budgetRange: `Package: ${packageParam}` }));
+      const budgetValue = priceParam
+        ? `Package: ${packageParam} (${priceParam})`
+        : `Package: ${packageParam}`;
+      setFormData((prev) => ({ ...prev, budgetRange: budgetValue }));
+      setSelectedPackageBadge({ name: packageParam, price: priceParam || undefined });
     }
+
     if (intentParam === 'quote' && !serviceParam) {
       setFormData((prev) => ({ ...prev, serviceInterest: 'Website Development' }));
     }
-  }, [searchParams]);
+  }, [searchParams, setCurrency]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,6 +87,10 @@ export default function ContactForm({ initialService, initialPackage }: ContactF
     setLoading(true);
 
     try {
+      const budgetFormatted = formData.budgetRange
+        ? `${formData.budgetRange} [${currencyInfo.code}]`
+        : `Flexible [${currencyInfo.code}]`;
+
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -80,7 +100,7 @@ export default function ContactForm({ initialService, initialPackage }: ContactF
           email: formData.email.trim(),
           phone: formData.phone.trim() || null,
           service_interest: formData.serviceInterest || 'General Inquiry',
-          budget_range: formData.budgetRange || 'Flexible',
+          budget_range: budgetFormatted,
           project_description: formData.projectDescription.trim(),
           preferred_contact_method: formData.preferredContactMethod,
         }),
@@ -88,14 +108,14 @@ export default function ContactForm({ initialService, initialPackage }: ContactF
 
       const data = await res.json();
 
-      if (res.ok && data.success) {
-        setSubmitted(true);
-        setSubmissionId(data.id || 'ZW-' + Math.floor(100000 + Math.random() * 900000));
-      } else {
-        setErrorMsg(data.error || 'Failed to submit proposal request. Please try again.');
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to submit project inquiry.');
       }
+
+      setSubmissionId(data.id || null);
+      setSubmitted(true);
     } catch (err: any) {
-      setErrorMsg('A network error occurred while submitting your enquiry. Please check your connection.');
+      setErrorMsg(err.message || 'Something went wrong while submitting your request. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -103,30 +123,35 @@ export default function ContactForm({ initialService, initialPackage }: ContactF
 
   if (submitted) {
     return (
-      <div className="p-8 sm:p-12 rounded-3xl bg-white border border-slate-200/90 shadow-xl text-center space-y-5 animate-in zoom-in-95 duration-300">
-        <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center">
-          <CheckCircle2 className="w-8 h-8" />
+      <div className="p-8 sm:p-12 rounded-3xl bg-white border border-slate-200/90 shadow-2xl text-center space-y-6 animate-in fade-in zoom-in-95 duration-200">
+        <div className="w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
+          <CheckCircle2 className="w-9 h-9" />
         </div>
-        <div className="space-y-2">
-          <h3 className="text-2xl font-bold text-slate-900">
-            Project Proposal Request Received!
+        
+        <div className="space-y-2 max-w-lg mx-auto">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#F27322]">
+            Inquiry Successfully Received
+          </span>
+          <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+            Thank you, {formData.fullName}!
           </h3>
-          <p className="text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
-            Thank you, <span className="font-semibold text-slate-900">{formData.fullName}</span>. Our technical agency lead is reviewing your requirements and will reach out via <span className="font-semibold">{formData.preferredContactMethod}</span> within 24 business hours.
+          <p className="text-sm text-slate-600 leading-relaxed">
+            Your project details have been securely logged in our system. A senior Zwebnex solutions engineer will review your requirements and reach out within <strong>24 business hours</strong>.
           </p>
         </div>
 
         {submissionId && (
-          <div className="inline-block px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 text-xs font-mono text-slate-600">
+          <div className="inline-block px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-500 font-mono">
             Reference ID: {submissionId}
           </div>
         )}
 
-        <div className="pt-4">
+        <div className="pt-4 border-t border-slate-100">
           <button
             type="button"
             onClick={() => {
               setSubmitted(false);
+              setSelectedPackageBadge(null);
               setFormData({
                 fullName: '',
                 businessName: '',
@@ -154,11 +179,56 @@ export default function ContactForm({ initialService, initialPackage }: ContactF
       {/* Header inside form */}
       <div>
         <h3 className="text-xl sm:text-2xl font-bold text-slate-900">
-          Request a Free Custom Proposal
+          Request a Custom Proposal
         </h3>
         <p className="text-xs sm:text-sm text-slate-500 mt-1">
-          Tell us about your project goals. We analyze your requirements and provide a fixed-scope roadmap.
+          Tell us about your project goals. We analyze your requirements and provide a fixed-scope roadmap in your preferred currency.
         </p>
+      </div>
+
+      {/* Selected Package Banner (if redirected from pricing with preselected package) */}
+      {selectedPackageBadge && (
+        <div className="p-4 rounded-2xl bg-orange-50 border border-orange-200/80 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <Sparkles className="w-5 h-5 text-[#F27322] shrink-0" />
+            <div>
+              <span className="text-xs font-bold text-slate-900 block">
+                Selected Plan: {selectedPackageBadge.name}
+              </span>
+              {selectedPackageBadge.price && (
+                <span className="text-xs font-semibold text-[#D45607]">
+                  Pricing: {selectedPackageBadge.price} onwards
+                </span>
+              )}
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedPackageBadge(null);
+              setFormData((prev) => ({ ...prev, budgetRange: '' }));
+            }}
+            className="text-xs text-slate-400 hover:text-slate-700 underline"
+          >
+            Clear
+          </button>
+        </div>
+      )}
+
+      {/* Region & Currency Selector Card */}
+      <div className="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/90 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div className="space-y-0.5">
+          <div className="flex items-center gap-2">
+            <Globe className="w-4 h-4 text-[#F27322]" />
+            <span className="text-xs font-bold text-slate-900">
+              Purchasing Region & Currency
+            </span>
+          </div>
+          <p className="text-[11px] text-slate-500">
+            Investment tiers and proposals adapt to your chosen currency. Default is <strong>Indian Rupee (₹ INR)</strong>.
+          </p>
+        </div>
+        <CurrencySelector variant="navbar" />
       </div>
 
       {errorMsg && (
@@ -222,13 +292,13 @@ export default function ContactForm({ initialService, initialPackage }: ContactF
             type="tel"
             value={formData.phone}
             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-            placeholder="+1 (555) 000-0000"
+            placeholder="+91 98765 43210"
             className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-800 placeholder-slate-400 outline-none focus:border-[#F27322] focus:ring-2 focus:ring-[#F27322]/20 transition-all"
           />
         </div>
       </div>
 
-      {/* Row 3: Service of Interest & Budget */}
+      {/* Row 3: Service of Interest & Budget in Selected Currency */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
@@ -252,7 +322,7 @@ export default function ContactForm({ initialService, initialPackage }: ContactF
 
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-            Approximate Budget <span className="text-slate-400 font-normal lowercase">(optional)</span>
+            Approximate Budget ({currencyInfo.code} · {currencyInfo.symbol.trim()})
           </label>
           <select
             value={formData.budgetRange}
@@ -260,11 +330,19 @@ export default function ContactForm({ initialService, initialPackage }: ContactF
             className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-800 outline-none focus:border-[#F27322] focus:ring-2 focus:ring-[#F27322]/20 bg-white transition-all"
           >
             <option value="">Select an investment tier...</option>
-            <option value="Under $2,500">Starter (Under $2,500)</option>
-            <option value="$2,500 - $5,000">Growth ($2,500 – $5,000)</option>
-            <option value="$5,000 - $10,000">Scale ($5,000 – $10,000)</option>
-            <option value="$10,000+">Enterprise ($10,000+)</option>
-            <option value="Flexible / Needs Consultation">Flexible / Needs Consultation</option>
+            
+            {/* If a custom package was selected from query param */}
+            {formData.budgetRange && !budgetTiers.some(t => t.value === formData.budgetRange) && (
+              <option value={formData.budgetRange}>
+                {formData.budgetRange}
+              </option>
+            )}
+
+            {budgetTiers.map((tier) => (
+              <option key={tier.value} value={tier.value}>
+                {tier.label}
+              </option>
+            ))}
           </select>
         </div>
       </div>
@@ -298,38 +376,52 @@ export default function ContactForm({ initialService, initialPackage }: ContactF
             const Icon = method.icon;
             const isSelected = formData.preferredContactMethod === method.id;
             return (
-              <button
+              <label
                 key={method.id}
-                type="button"
-                onClick={() => setFormData({ ...formData, preferredContactMethod: method.id as any })}
-                className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-semibold border transition-all ${
+                className={`flex items-center justify-center gap-2 p-3 rounded-xl border cursor-pointer text-xs font-medium transition-all ${
                   isSelected
-                    ? 'bg-orange-50 border-[#F27322] text-[#D45607]'
-                    : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                    ? 'border-[#F27322] bg-orange-50/50 text-[#D45607] font-semibold'
+                    : 'border-slate-200 text-slate-600 hover:bg-slate-50'
                 }`}
               >
-                <Icon className="w-3.5 h-3.5" />
+                <input
+                  type="radio"
+                  name="preferredContactMethod"
+                  value={method.id}
+                  checked={isSelected}
+                  onChange={() =>
+                    setFormData({
+                      ...formData,
+                      preferredContactMethod: method.id as 'email' | 'phone' | 'whatsapp',
+                    })
+                  }
+                  className="sr-only"
+                />
+                <Icon className={`w-4 h-4 ${isSelected ? 'text-[#F27322]' : 'text-slate-400'}`} />
                 <span>{method.label}</span>
-              </button>
+              </label>
             );
           })}
         </div>
       </div>
 
-      {/* Privacy Consent */}
-      <div className="flex items-start gap-2.5 pt-2">
-        <input
-          type="checkbox"
-          id="agreePrivacy"
-          checked={formData.agreePrivacy}
-          onChange={(e) => setFormData({ ...formData, agreePrivacy: e.target.checked })}
-          className="w-4 h-4 rounded text-[#F27322] focus:ring-[#F27322] border-slate-300 mt-0.5"
-        />
-        <label htmlFor="agreePrivacy" className="text-xs text-slate-500 leading-normal">
-          I agree that Zwebnex may process my details to respond to this inquiry in accordance with our{' '}
-          <a href="/privacy" target="_blank" className="text-[#F27322] hover:underline">
-            Privacy Policy
-          </a>.
+      {/* Privacy Agreement Checkbox */}
+      <div className="pt-2">
+        <label className="flex items-start gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            required
+            checked={formData.agreePrivacy}
+            onChange={(e) => setFormData({ ...formData, agreePrivacy: e.target.checked })}
+            className="mt-1 w-4 h-4 rounded border-slate-300 text-[#F27322] focus:ring-[#F27322]"
+          />
+          <span className="text-xs text-slate-500 leading-relaxed">
+            I agree to the{' '}
+            <a href="/privacy" target="_blank" className="text-[#F27322] hover:underline">
+              Privacy Policy
+            </a>{' '}
+            and consent to Zwebnex processing my contact details for the purpose of preparing a tailored project proposal.
+          </span>
         </label>
       </div>
 
@@ -337,24 +429,26 @@ export default function ContactForm({ initialService, initialPackage }: ContactF
       <button
         type="submit"
         disabled={loading}
-        className="w-full flex items-center justify-center gap-2 py-4 rounded-xl text-base font-bold text-white bg-[#F27322] hover:bg-[#D45607] shadow-lg shadow-orange-500/20 hover:shadow-orange-500/35 transition-all disabled:opacity-60"
+        className="w-full inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-base font-bold text-white bg-[#F27322] hover:bg-[#D45607] disabled:opacity-60 shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 transition-all duration-200 cursor-pointer disabled:cursor-not-allowed group"
       >
         {loading ? (
           <>
             <Loader2 className="w-5 h-5 animate-spin" />
-            <span>Sending Secure Inquiry...</span>
+            <span>Encrypting & Submitting...</span>
           </>
         ) : (
           <>
-            <span>Submit Project Proposal Request</span>
-            <Send className="w-4 h-4" />
+            <span>Submit Project Inquiry</span>
+            <Send className="w-4 h-4 transition-transform group-hover:translate-x-1" />
           </>
         )}
       </button>
 
-      <p className="text-[11px] text-center text-slate-400">
-        🔒 All data is securely handled via Supabase PostgreSQL with strict Row Level Security.
-      </p>
+      <div className="text-center">
+        <span className="text-[11px] text-slate-400">
+          Strictly confidential · Zero spam guarantee · 100% Free Consultation
+        </span>
+      </div>
 
     </form>
   );
