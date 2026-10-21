@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@theme {
+  --color-orange-50: #FFF7ED;
+  --color-orange-100: #FFEDD5;
+  --color-orange-200: #FED7AA;
+  --color-orange-300: #FDBA74;
+  --color-orange-400: #FB923C;
+  --color-orange-500: #F27322;
+  --color-orange-600: #D45607;
+  --color-orange-700: #B84305;
+  --color-brand-orange: #F27322;
+  --color-brand-dark: #0B0F19;
+  --color-brand-card: #111827;
+}
+
+:root {
+  --brand-orange: #F27322;
+  --brand-orange-hover: #D45607;
+  --brand-orange-light: #FFF7ED;
+  --brand-dark: #0B0F19;
+  --brand-charcoal: #182234;
+  --brand-border: #E2E8F0;
+}
+
+/* Custom Smooth Transitions & Scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: #1E293B;
+  background-color: #FFFFFF;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+/* Gradient Utilities & Glows */
+.brand-gradient {
+  background: linear-gradient(135deg, #F27322 0%, #EA580C 100%);
+}
+
+.brand-gradient-subtle {
+  background: linear-gradient(180deg, #FFFFFF 0%, #FFF7ED 100%);
+}
+
+.brand-gradient-dark {
+  background: linear-gradient(135deg, #0B0F19 0%, #172136 100%);
+}
+
+.brand-glow {
+  box-shadow: 0 10px 30px -10px rgba(242, 115, 34, 0.4);
+}
+
+.brand-glow-lg {
+  box-shadow: 0 20px 50px -15px rgba(242, 115, 34, 0.35);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F8FAFC;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #F27322;
+}
