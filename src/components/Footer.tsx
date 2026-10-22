@@ -79,6 +79,12 @@ export default function Footer() {
                   Contact
                 </Link>
               </li>
+              <li>
+                <Link href="/login" className="hover:text-[#F27322] transition-colors flex items-center gap-1.5 text-[#F27322]/90">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#F27322]" />
+                  <span>Client Log In</span>
+                </Link>
+              </li>
             </ul>
           </div>
 

@@ -14,20 +14,51 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="pt-8 pb-16">
-      {/* Hero Header */}
-      <section className="py-12 sm:py-20 bg-gradient-to-b from-orange-50/40 via-white to-white">
+    <div className="pt-4 pb-16">
+      {/* Hero Header & Breadcrumb */}
+      <section className="py-12 sm:py-20 bg-gradient-to-b from-orange-50/40 via-white to-white border-b border-slate-100">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 text-[#D45607] text-xs font-semibold uppercase tracking-wider">
-            About Zwebnex
+          
+          {/* Breadcrumb Navigation */}
+          <nav className="inline-flex items-center gap-2 text-xs font-medium text-slate-500 bg-white/80 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-slate-200/80 shadow-2xs mb-2" aria-label="Breadcrumb">
+            <Link href="/" className="hover:text-[#F27322] transition-colors">Home</Link>
+            <span className="text-slate-300">/</span>
+            <span className="text-[#F27322] font-semibold">About Us</span>
+          </nav>
+
+          <div className="block">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 text-[#D45607] text-xs font-semibold uppercase tracking-wider">
+              About Zwebnex Agency
+            </div>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
+          
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight">
             A Premium Website Builder &{' '}
             <span className="text-[#F27322]">Digital Growth Agency</span>
           </h1>
           <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
             We partner with businesses to architect, build, and deploy high-converting websites, e-commerce stores, and autonomous AI automation.
           </p>
+
+          {/* Quick Metrics Strip */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-8 max-w-3xl mx-auto text-left">
+            <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
+              <div className="text-2xl sm:text-3xl font-black text-[#F27322]">100%</div>
+              <div className="text-xs text-slate-500 mt-1 font-medium">Bespoke Architecture</div>
+            </div>
+            <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
+              <div className="text-2xl sm:text-3xl font-black text-slate-900">&lt; 1s</div>
+              <div className="text-xs text-slate-500 mt-1 font-medium">Core Web Vitals</div>
+            </div>
+            <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
+              <div className="text-2xl sm:text-3xl font-black text-slate-900">24/7</div>
+              <div className="text-xs text-slate-500 mt-1 font-medium">AI Support Agents</div>
+            </div>
+            <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
+              <div className="text-2xl sm:text-3xl font-black text-emerald-600">99.8%</div>
+              <div className="text-xs text-slate-500 mt-1 font-medium">Client Satisfaction</div>
+            </div>
+          </div>
         </div>
       </section>
 

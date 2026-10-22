@@ -13,12 +13,22 @@ export const metadata: Metadata = {
 
 export default function PricingPage() {
   return (
-    <div className="pt-8 pb-16">
+    <div className="pt-4 pb-16">
       {/* Header */}
-      <section className="py-12 sm:py-20 bg-gradient-to-b from-orange-50/40 via-white to-white">
+      <section className="py-12 sm:py-20 bg-gradient-to-b from-orange-50/40 via-white to-white border-b border-slate-100">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 text-[#D45607] text-xs font-semibold uppercase tracking-wider">
-            Predictable & Transparent Scope
+          
+          {/* Breadcrumb Navigation */}
+          <nav className="inline-flex items-center gap-2 text-xs font-medium text-slate-500 bg-white/80 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-slate-200/80 shadow-2xs mb-2" aria-label="Breadcrumb">
+            <Link href="/" className="hover:text-[#F27322] transition-colors">Home</Link>
+            <span className="text-slate-300">/</span>
+            <span className="text-[#F27322] font-semibold">Pricing</span>
+          </nav>
+
+          <div className="block">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 text-[#D45607] text-xs font-semibold uppercase tracking-wider">
+              Predictable & Transparent Scope
+            </div>
           </div>
           <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
             Tailored Packages for <span className="text-[#F27322]">Every Stage</span>

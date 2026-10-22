@@ -81,8 +81,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${plusJakarta.variable} scroll-smooth`}>
-      <body className="min-h-screen flex flex-col font-sans antialiased text-slate-800 bg-white selection:bg-orange-100 selection:text-orange-900">
+    <html lang="en" suppressHydrationWarning className={`${plusJakarta.variable} scroll-smooth`}>
+      <body suppressHydrationWarning className="min-h-screen flex flex-col font-sans antialiased text-slate-800 bg-white selection:bg-orange-100 selection:text-orange-900">
         <CurrencyProvider>
           <Navbar />
           <main className="flex-1">{children}</main>

@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import ContactForm from '@/components/ContactForm';
 import { Mail, Clock, ShieldCheck, CheckCircle2, Sparkles, MessageSquare } from '@/components/Icons';
 
@@ -10,14 +11,24 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="pt-8 pb-20 bg-gradient-to-b from-orange-50/30 via-white to-white min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="pt-4 pb-20 bg-gradient-to-b from-orange-50/30 via-white to-white min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-14 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-100 text-[#D45607] text-xs font-semibold uppercase tracking-wider">
-            <span className="w-2 h-2 rounded-full bg-[#F27322] animate-pulse" />
-            <span>Direct Project Inquiry</span>
+          
+          {/* Breadcrumb Navigation */}
+          <nav className="inline-flex items-center gap-2 text-xs font-medium text-slate-500 bg-white/80 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-slate-200/80 shadow-2xs mb-2" aria-label="Breadcrumb">
+            <Link href="/" className="hover:text-[#F27322] transition-colors">Home</Link>
+            <span className="text-slate-300">/</span>
+            <span className="text-[#F27322] font-semibold">Contact</span>
+          </nav>
+
+          <div className="block">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-100 text-[#D45607] text-xs font-semibold uppercase tracking-wider">
+              <span className="w-2 h-2 rounded-full bg-[#F27322] animate-pulse" />
+              <span>Direct Project Inquiry</span>
+            </div>
           </div>
           <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
             Let’s Build Something{' '}

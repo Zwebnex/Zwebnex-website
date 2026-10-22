@@ -1,13 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
 import { ServiceLead, NewsletterSubscriber } from './types';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://wfssqoirmhvlpudooigx.supabase.co';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indmc3Nxb2lybWh2bHB1ZG9vaWd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxODIyMDEsImV4cCI6MjEwNzc1ODIwMX0.if37nY5Nf8TBxec6x84Ag8HjV0799eKP8wUlC7pM1Pc';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://dctzpnfpvnwvevhhmneq.supabase.co';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_Ev6o--YCb9LXHpQoJa5yOw_htKHVMdy';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    persistSession: false,
-    autoRefreshToken: false,
+    persistSession: typeof window !== 'undefined',
+    autoRefreshToken: typeof window !== 'undefined',
+    detectSessionInUrl: typeof window !== 'undefined',
   },
 });
 

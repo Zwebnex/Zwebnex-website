@@ -1,8 +1,7 @@
-'use client';
-
 import React from 'react';
+import Link from 'next/link';
 import { BRAND_VALUES } from '@/lib/data';
-import { Sparkles, Gauge, Target, ShieldCheck, MessageSquareCheck, Layers } from '@/components/Icons';
+import { Sparkles, Gauge, Target, ShieldCheck, MessageSquareCheck, Layers, ArrowRight } from '@/components/Icons';
 
 const valueIcons: Record<string, React.ElementType> = {
   Sparkles,
@@ -52,6 +51,18 @@ export default function WhyChooseUs() {
               </div>
             );
           })}
+        </div>
+
+        {/* Link to Dedicated About Page */}
+        <div className="mt-12 text-center">
+          <Link
+            href="/about"
+            scroll={true}
+            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold text-slate-800 bg-orange-50 hover:bg-orange-100 border border-orange-200 transition-colors shadow-2xs group"
+          >
+            <span>Read Our Full Story & Engineering Philosophy</span>
+            <ArrowRight className="w-4 h-4 text-[#F27322] transition-transform group-hover:translate-x-1" />
+          </Link>
         </div>
 
       </div>
